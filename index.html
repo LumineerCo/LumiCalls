@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LumiConnect — Powered by LumineerCo</title>
+  <meta name="description" content="Connect globally. Chat, call, and video with random users worldwide. Free, anonymous, instant." />
+  <meta property="og:title" content="LumiConnect — Illuminate Your Connections" />
+  <meta property="og:description" content="Chat anonymously. Call nearby. Video globally. Free forever." />
+  <meta name="theme-color" content="#080B14" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>" />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <!-- PeerJS for WebRTC -->
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<!-- ── PARTICLES BG ── -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- ── NOTIFICATION TOAST ── -->
+<div id="toast" class="toast"></div>
+
+<!-- ── AD MODAL ── -->
+<div id="ad-modal" class="modal-overlay hidden">
+  <div class="modal-box ad-box">
+    <div class="ad-header">
+      <span class="ad-badge">📢 Advertisement</span>
+      <span id="ad-timer">⏳ 15s</span>
+    </div>
+    <div id="ad-content"></div>
+    <div class="ad-reward">
+      <span id="ad-reward-text">+15 ⚡ Points for watching</span>
+    </div>
+    <button id="ad-close-btn" class="btn btn-glow" disabled>Collect Points</button>
+  </div>
+</div>
+
+<!-- ── INVITE MODAL ── -->
+<div id="invite-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>📨 Invite Someone</h3>
+    <div class="invite-options">
+      <div class="input-group">
+        <label>Room Link</label>
+        <div class="copy-row">
+          <input type="text" id="invite-link" readonly />
+          <button onclick="copyInvite()" class="btn btn-sm">Copy</button>
+        </div>
+      </div>
+      <div class="divider-text">— or share via —</div>
+      <div class="share-btns">
+        <button onclick="shareWhatsApp()" class="btn-share whatsapp">💬 WhatsApp</button>
+        <button onclick="shareSMS()" class="btn-share sms">📱 SMS</button>
+        <button onclick="shareEmail()" class="btn-share email">✉️ Email</button>
+      </div>
+    </div>
+    <button onclick="closeModal('invite-modal')" class="btn btn-ghost mt">Close</button>
+  </div>
+</div>
+
+<!-- ── POINTS INFO MODAL ── -->
+<div id="points-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>⚡ Points System</h3>
+    <div class="points-table">
+      <div class="pt-row earn"><span>📝 Register</span><span>+100 pts</span></div>
+      <div class="pt-row earn"><span>🚀 Temp Account</span><span>+20 pts</span></div>
+      <div class="pt-row earn"><span>📅 Daily Login</span><span>+10 pts</span></div>
+      <div class="pt-row earn"><span>🎥 Watch Video Ad</span><span>+15 pts</span></div>
+      <div class="pt-row earn"><span>🔗 Click Link Ad</span><span>+8 pts</span></div>
+      <div class="pt-row earn"><span>👥 Refer Friend</span><span>+50 pts</span></div>
+      <div class="pt-row earn"><span>⏱️ 3hr+ Session</span><span>+30 pts</span></div>
+      <div class="pt-row cost"><span>💬 Per Message</span><span>-1 pt</span></div>
+      <div class="pt-row cost"><span>🎙️ Audio/min</span><span>-3 pts</span></div>
+      <div class="pt-row cost"><span>📹 Video/min</span><span>-5 pts</span></div>
+    </div>
+    <h4 class="mt">🎖️ Upgrade Plans</h4>
+    <div class="plan-upgrade-info">
+      <div>Free → Standard: <strong>500 pts</strong></div>
+      <div>Standard → Premium: <strong>2000 pts</strong></div>
+    </div>
+    <button onclick="closeModal('points-modal')" class="btn btn-glow mt">Got It!</button>
+  </div>
+</div>
+
+<!-- ── MAIN APP ── -->
+<div id="app">
+
+  <!-- NAV -->
+  <nav id="main-nav" class="nav-bar">
+    <a class="nav-brand" href="#home">
+      <span class="brand-icon">🌐</span>
+      <span class="brand-name">LumiConnect</span>
+    </a>
+    <div class="nav-links">
+      <a href="#chat" class="nav-link" data-view="chat">💬 Chat</a>
+      <a href="#audio" class="nav-link" data-view="audio">🎙️ Audio</a>
+      <a href="#video" class="nav-link" data-view="video">📹 Video</a>
+      <a href="#forum" class="nav-link" data-view="forum">📋 Forum</a>
+    </div>
+    <div class="nav-right">
+      <span id="nav-points" class="points-badge hidden">⚡ <span id="nav-pts-val">0</span></span>
+      <button id="nav-auth-btn" class="btn btn-sm btn-glow" onclick="showView('auth')">Login</button>
+      <div id="nav-user" class="nav-user hidden" onclick="showView('profile')">
+        <div class="user-avatar" id="nav-avatar">G</div>
+        <span id="nav-username">Guest</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════ HOME VIEW ═══════════════ -->
+  <div id="view-home" class="view active">
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">✨ Powered by LumineerCo</div>
+        <h1 class="hero-title">
+          <span class="glow-text">Illuminate</span><br/>
+          Your Connections
+        </h1>
+        <p class="hero-sub">Chat anonymously. Call nearby. Video globally.<br/>No account needed to start.</p>
+        <div class="hero-actions">
+          <button class="btn btn-hero btn-glow" onclick="quickConnect('chat')">💬 Start Chatting</button>
+          <button class="btn btn-hero btn-outline" onclick="quickConnect('audio')">🎙️ Audio Call</button>
+          <button class="btn btn-hero btn-outline" onclick="quickConnect('video')">📹 Video Call</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><span id="stat-users">—</span><label>Online Now</label></div>
+          <div class="stat"><span id="stat-rooms">—</span><label>Active Rooms</label></div>
+          <div class="stat"><span>Free</span><label>Forever Base</label></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="globe-ring r1"></div>
+        <div class="globe-ring r2"></div>
+        <div class="globe-ring r3"></div>
+        <div class="globe-core">🌐</div>
+        <div class="orbit-dot d1">💬</div>
+        <div class="orbit-dot d2">🎙️</div>
+        <div class="orbit-dot d3">📹</div>
+      </div>
+    </section>
+
+    <section class="features-section">
+      <h2 class="section-title">Everything You Need</h2>
+      <div class="features-grid">
+        <div class="feature-card" onclick="quickConnect('chat')">
+          <div class="feature-icon">💬</div>
+          <h3>Anonymous Chat</h3>
+          <p>Text chat with random users nearby or worldwide. No registration needed.</p>
+          <span class="feature-badge free">Free</span>
+        </div>
+        <div class="feature-card" onclick="quickConnect('audio')">
+          <div class="feature-icon">🎙️</div>
+          <h3>Audio Calls</h3>
+          <p>Crystal-clear voice calls. Connect with users in your area first, then expand globally.</p>
+          <span class="feature-badge standard">Standard+</span>
+        </div>
+        <div class="feature-card" onclick="quickConnect('video')">
+          <div class="feature-icon">📹</div>
+          <h3>Video Calls</h3>
+          <p>Face-to-face random video calls with people worldwide. HD quality, P2P encrypted.</p>
+          <span class="feature-badge premium">Premium</span>
+        </div>
+        <div class="feature-card" onclick="showView('forum')">
+          <div class="feature-icon">📋</div>
+          <h3>Community Forum</h3>
+          <p>Discuss, share, and connect. LUMIA AI keeps the conversation flowing 24/7.</p>
+          <span class="feature-badge free">Free Read</span>
+        </div>
+        <div class="feature-card" onclick="showModal('points-modal')">
+          <div class="feature-icon">⚡</div>
+          <h3>Points & Rewards</h3>
+          <p>Earn points by watching ads, referring friends, and staying active. Unlock premium!</p>
+          <span class="feature-badge earn">Earn Free</span>
+        </div>
+        <div class="feature-card" onclick="showView('forum')">
+          <div class="feature-icon">🤖</div>
+          <h3>LUMIA Assistant</h3>
+          <p>Our AI community manager posts insights, tips, and keeps the forum alive.</p>
+          <span class="feature-badge ai">AI Powered</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="plans-section">
+      <h2 class="section-title">Choose Your Plan</h2>
+      <div class="plans-grid">
+        <div class="plan-card">
+          <div class="plan-name">Free</div>
+          <div class="plan-price">₹0<span>/forever</span></div>
+          <ul class="plan-features">
+            <li>✅ Anonymous Chat</li>
+            <li>✅ 20 Starting Points</li>
+            <li>✅ Read Forum</li>
+            <li>✅ Earn Points via Ads</li>
+            <li>❌ Audio Calls</li>
+            <li>❌ Video Calls</li>
+            <li>❌ Post in Forum</li>
+          </ul>
+          <button class="btn btn-outline" onclick="quickConnect('chat')">Start Free</button>
+        </div>
+        <div class="plan-card featured">
+          <div class="plan-badge">⭐ Popular</div>
+          <div class="plan-name">Standard</div>
+          <div class="plan-price">500 pts<span>/unlock</span></div>
+          <ul class="plan-features">
+            <li>✅ Everything in Free</li>
+            <li>✅ Audio Calls</li>
+            <li>✅ Post in Forum</li>
+            <li>✅ 5 Rooms</li>
+            <li>✅ Priority Matching</li>
+            <li>❌ Video Calls</li>
+            <li>❌ HD Quality</li>
+          </ul>
+          <button class="btn btn-glow" onclick="showModal('points-modal')">Earn Points</button>
+        </div>
+        <div class="plan-card premium">
+          <div class="plan-badge">👑 Premium</div>
+          <div class="plan-name">Premium</div>
+          <div class="plan-price">2000 pts<span>/unlock</span></div>
+          <ul class="plan-features">
+            <li>✅ Everything in Standard</li>
+            <li>✅ HD Video Calls</li>
+            <li>✅ 20 Rooms</li>
+            <li>✅ Global Priority Match</li>
+            <li>✅ Extended Chat History</li>
+            <li>✅ Bonus Ad Rewards</li>
+            <li>✅ VIP Badge</li>
+          </ul>
+          <button class="btn btn-glow" onclick="showModal('points-modal')">Earn Points</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════════ AUTH VIEW ═══════════════ -->
+  <div id="view-auth" class="view hidden">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-logo">🌐 LumiConnect</div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+          <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+          <button class="auth-tab" onclick="switchAuthTab('temp')">Quick Guest</button>
+        </div>
+
+        <!-- Login -->
+        <div id="auth-login" class="auth-form">
+          <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="login-email" placeholder="your@email.com" />
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="••••••••" />
+          </div>
+          <button class="btn btn-glow w-full" onclick="doLogin()">Login</button>
+        </div>
+
+        <!-- Register -->
+        <div id="auth-register" class="auth-form hidden">
+          <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="reg-username" placeholder="CoolUser123" maxlength="30" />
+          </div>
+          <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="reg-email" placeholder="your@email.com" />
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="reg-password" placeholder="Min 6 characters" />
+          </div>
+          <div class="input-group">
+            <label>Referral Code (optional)</label>
+            <input type="text" id="reg-referral" placeholder="Friend's code" maxlength="8" />
+          </div>
+          <button class="btn btn-glow w-full" onclick="doRegister()">Create Account (+100 pts)</button>
+        </div>
+
+        <!-- Temp/Guest -->
+        <div id="auth-temp" class="auth-form hidden">
+          <div class="temp-info">
+            <div class="temp-icon">⚡</div>
+            <p>Jump in instantly as a guest! No email needed.</p>
+            <ul>
+              <li>✅ Get 20 free points</li>
+              <li>✅ Chat immediately</li>
+              <li>⚠️ Account deleted after 24h</li>
+              <li>❌ No data backup</li>
+            </ul>
+          </div>
+          <button class="btn btn-glow w-full" onclick="doTempLogin()">Continue as Guest ⚡</button>
+        </div>
+
+        <p class="auth-terms">By continuing, you agree to our <a href="pages/terms.html" target="_blank">Terms</a> &amp; <a href="pages/privacy.html" target="_blank">Privacy Policy</a>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ CHAT VIEW ═══════════════ -->
+  <div id="view-chat" class="view hidden">
+    <div class="call-layout">
+      <div class="call-sidebar">
+        <h3 class="sidebar-title">💬 Chat</h3>
+        <div class="connect-options">
+          <button class="btn btn-glow w-full" onclick="randomConnect('chat')">🎲 Random Chat</button>
+          <button class="btn btn-outline w-full" onclick="createMyRoom('chat')">🏠 Create Room</button>
+          <div class="join-row">
+            <input type="text" id="join-room-id" placeholder="Room ID / Code" />
+            <button class="btn btn-sm" onclick="joinByRoomId('chat')">Join</button>
+          </div>
+        </div>
+        <div id="chat-room-info" class="room-info hidden">
+          <div class="room-id-display">
+            <span id="chat-room-display">—</span>
+            <button onclick="showInvite()" class="btn btn-xs">📨 Invite</button>
+          </div>
+          <div id="chat-participants" class="participants-list"></div>
+        </div>
+        <div class="earn-points-box">
+          <p>⚡ Earn points to chat more!</p>
+          <button class="btn btn-sm" onclick="watchAd()">🎥 Watch Ad (+15 pts)</button>
+        </div>
+        <div class="my-points-box">
+          <span>Your Points:</span>
+          <strong id="chat-points-display">0 ⚡</strong>
+        </div>
+      </div>
+      <div class="chat-main">
+        <div id="chat-status-bar" class="status-bar">
+          <span id="chat-status-text">Connect to start chatting...</span>
+          <span id="chat-status-dot" class="status-dot"></span>
+        </div>
+        <div id="chat-messages" class="messages-area">
+          <div class="chat-empty">
+            <div class="empty-icon">💬</div>
+            <p>No messages yet.<br/>Connect to start chatting!</p>
+          </div>
+        </div>
+        <div id="chat-input-bar" class="input-bar">
+          <input type="text" id="chat-input" placeholder="Type a message... (1 pt per msg)" onkeydown="if(event.key==='Enter')sendChatMsg()" />
+          <button class="btn btn-glow" onclick="sendChatMsg()">Send ➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ AUDIO VIEW ═══════════════ -->
+  <div id="view-audio" class="view hidden">
+    <div class="call-layout">
+      <div class="call-sidebar">
+        <h3 class="sidebar-title">🎙️ Audio Call</h3>
+        <div id="audio-plan-gate" class="plan-gate hidden">
+          <div class="gate-icon">🔒</div>
+          <p>Audio calls require <strong>Standard</strong> plan (500 pts).</p>
+          <button class="btn btn-glow" onclick="showModal('points-modal')">How to Unlock</button>
+        </div>
+        <div id="audio-connect-opts" class="connect-options">
+          <button class="btn btn-glow w-full" onclick="randomConnect('audio')">🎲 Random Call</button>
+          <button class="btn btn-outline w-full" onclick="createMyRoom('audio')">📞 Start Room</button>
+          <div class="join-row">
+            <input type="text" id="join-audio-id" placeholder="Room ID" />
+            <button class="btn btn-sm" onclick="joinByRoomId('audio')">Join</button>
+          </div>
+        </div>
+        <div id="audio-room-info" class="room-info hidden">
+          <div class="room-id-display">
+            <span id="audio-room-display">—</span>
+            <button onclick="showInvite()" class="btn btn-xs">📨 Invite</button>
+          </div>
+        </div>
+        <div class="call-controls hidden" id="audio-controls">
+          <button id="mute-btn" class="ctrl-btn" onclick="toggleMute()">🎙️ Mute</button>
+          <button class="ctrl-btn end" onclick="endCall()">📵 End</button>
+        </div>
+        <div class="my-points-box">
+          <span>Your Points:</span>
+          <strong id="audio-points-display">0 ⚡</strong>
+          <small>-3 pts/min</small>
+        </div>
+      </div>
+      <div class="call-visual-area">
+        <div class="audio-visualizer">
+          <div class="audio-rings">
+            <div class="audio-ring ar1"></div>
+            <div class="audio-ring ar2"></div>
+            <div class="audio-ring ar3"></div>
+          </div>
+          <div class="audio-avatar" id="audio-peer-avatar">?</div>
+          <div id="audio-peer-name">Waiting...</div>
+          <div id="audio-timer" class="call-timer hidden">⏱️ 00:00</div>
+          <div id="audio-status" class="audio-status">Connect to start a call</div>
+        </div>
+        <audio id="remote-audio" autoplay></audio>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ VIDEO VIEW ═══════════════ -->
+  <div id="view-video" class="view hidden">
+    <div class="video-layout">
+      <div class="video-main-area">
+        <video id="remote-video" autoplay playsinline class="remote-video"></video>
+        <video id="local-video" autoplay muted playsinline class="local-video"></video>
+        <div id="video-overlay" class="video-overlay">
+          <div class="video-waiting">
+            <div class="video-icon">📹</div>
+            <p id="video-status-text">Connect to start video call</p>
+          </div>
+        </div>
+        <div class="video-controls">
+          <button id="vid-mute-btn" class="ctrl-btn" onclick="toggleVideoMute()">🎙️</button>
+          <button id="vid-cam-btn" class="ctrl-btn" onclick="toggleCamera()">📷</button>
+          <button class="ctrl-btn end" onclick="endCall()">📵</button>
+          <button class="ctrl-btn" onclick="showInvite()">📨</button>
+        </div>
+      </div>
+      <div class="call-sidebar video-sidebar">
+        <h3 class="sidebar-title">📹 Video</h3>
+        <div id="video-plan-gate" class="plan-gate hidden">
+          <div class="gate-icon">🔒</div>
+          <p>Video calls require <strong>Premium</strong> plan (2000 pts).</p>
+          <button class="btn btn-glow" onclick="showModal('points-modal')">Unlock</button>
+        </div>
+        <div id="video-connect-opts" class="connect-options">
+          <button class="btn btn-glow w-full" onclick="randomConnect('video')">🎲 Random Video</button>
+          <button class="btn btn-outline w-full" onclick="createMyRoom('video')">🎥 Create Room</button>
+          <div class="join-row">
+            <input type="text" id="join-video-id" placeholder="Room ID" />
+            <button class="btn btn-sm" onclick="joinByRoomId('video')">Join</button>
+          </div>
+        </div>
+        <div id="video-room-info" class="room-info hidden">
+          <div class="room-id-display">
+            <span id="video-room-display">—</span>
+            <button onclick="showInvite()" class="btn btn-xs">📨 Invite</button>
+          </div>
+        </div>
+        <div class="my-points-box">
+          <span>Points:</span>
+          <strong id="video-points-display">0 ⚡</strong>
+          <small>-5 pts/min</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ FORUM VIEW ═══════════════ -->
+  <div id="view-forum" class="view hidden">
+    <div class="forum-container">
+      <div class="forum-header">
+        <h2>📋 Community Forum</h2>
+        <div class="forum-header-right">
+          <span class="lumia-badge">🤖 LUMIA posts every 6h</span>
+          <button id="forum-post-btn" class="btn btn-glow hidden" onclick="showForumCompose()">✍️ New Post</button>
+        </div>
+      </div>
+      <div class="forum-compose hidden" id="forum-compose">
+        <input type="text" id="forum-title" placeholder="Post title..." maxlength="200" />
+        <textarea id="forum-content" placeholder="Share your thoughts... (5 pts to post)" maxlength="5000"></textarea>
+        <div class="forum-compose-actions">
+          <button class="btn btn-glow" onclick="submitForumPost()">Post (−5 pts)</button>
+          <button class="btn btn-ghost" onclick="hideForumCompose()">Cancel</button>
+        </div>
+      </div>
+      <div id="forum-posts" class="forum-posts">
+        <div class="loading-spinner">Loading posts...</div>
+      </div>
+      <div class="forum-load-more">
+        <button class="btn btn-outline" onclick="loadForumPosts()">Load More</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PROFILE VIEW ═══════════════ -->
+  <div id="view-profile" class="view hidden">
+    <div class="profile-container">
+      <div class="profile-card">
+        <div class="profile-avatar-lg" id="profile-avatar-lg">G</div>
+        <h2 id="profile-username-display">Guest</h2>
+        <div class="profile-badges">
+          <span id="profile-plan-badge" class="plan-badge-sm">Free</span>
+          <span id="profile-type-badge" class="type-badge">Temp</span>
+        </div>
+        <div class="profile-points-big">
+          <span id="profile-points-big">0</span>
+          <label>⚡ Points</label>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <div class="profile-section">
+          <h3>📊 Your Stats</h3>
+          <div class="stats-grid-sm">
+            <div class="stat-sm"><span id="p-referrals">0</span><label>Referrals</label></div>
+            <div class="stat-sm"><span id="p-plan">Free</span><label>Plan</label></div>
+            <div class="stat-sm"><span id="p-type">Guest</span><label>Account</label></div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <h3>🔗 Your Referral Code</h3>
+          <div class="referral-box">
+            <code id="referral-code-display">—</code>
+            <button onclick="copyReferralCode()" class="btn btn-sm">Copy</button>
+          </div>
+          <p class="hint-text">Share your code. Earn 50 pts per referral!</p>
+        </div>
+
+        <div class="profile-section">
+          <h3>⚡ Earn More Points</h3>
+          <div class="earn-grid">
+            <button class="earn-btn" onclick="watchAd('video')">🎥 Watch Video Ad<br/><small>+15 pts</small></button>
+            <button class="earn-btn" onclick="watchAd('link')">🔗 Visit Ad Link<br/><small>+8 pts</small></button>
+            <button class="earn-btn" onclick="copyReferralCode()">👥 Refer Friends<br/><small>+50 pts each</small></button>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <h3>📜 Point History</h3>
+          <div id="point-history-list" class="point-history"></div>
+        </div>
+
+        <div class="profile-section" id="upgrade-section">
+          <h3>⬆️ Upgrade Plan</h3>
+          <div id="upgrade-info"></div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn btn-outline" onclick="showView('home')">← Back</button>
+        <button class="btn btn-danger" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ADMIN VIEW ═══════════════ -->
+  <div id="view-admin" class="view hidden">
+    <div class="admin-container">
+      <div id="admin-login-screen" class="admin-login">
+        <h2>🔐 Admin Panel</h2>
+        <div class="input-group">
+          <label>Admin Secret</label>
+          <input type="password" id="admin-secret-input" placeholder="Enter admin secret" />
+        </div>
+        <button class="btn btn-glow" onclick="doAdminLogin()">Access Panel</button>
+      </div>
+
+      <div id="admin-panel" class="hidden">
+        <div class="admin-header">
+          <h2>🛡️ Admin Dashboard</h2>
+          <button class="btn btn-sm btn-danger" onclick="document.getElementById('admin-panel').classList.add('hidden');document.getElementById('admin-login-screen').classList.remove('hidden')">Logout</button>
+        </div>
+
+        <div id="admin-stats" class="admin-stats-grid"></div>
+
+        <div class="admin-tabs">
+          <button class="admin-tab active" onclick="adminTabSwitch('users')">👥 Users</button>
+          <button class="admin-tab" onclick="adminTabSwitch('adslots')">📢 Ad Slots</button>
+          <button class="admin-tab" onclick="adminTabSwitch('ads')">🎯 Ads</button>
+          <button class="admin-tab" onclick="adminTabSwitch('actions')">⚙️ Actions</button>
+        </div>
+
+        <div id="admin-tab-users" class="admin-tab-content">
+          <div id="admin-users-table"></div>
+        </div>
+        <div id="admin-tab-adslots" class="admin-tab-content hidden">
+          <div id="admin-slots-table"></div>
+        </div>
+        <div id="admin-tab-ads" class="admin-tab-content hidden">
+          <button class="btn btn-glow mb" onclick="showAddAdForm()">+ Add New Ad</button>
+          <div id="admin-add-ad-form" class="admin-form hidden">
+            <h4>Add New Advertisement</h4>
+            <input type="text" id="ad-title" placeholder="Ad Title" />
+            <input type="text" id="ad-url" placeholder="Destination URL" />
+            <select id="ad-type"><option value="link">Link Ad</option><option value="video">Video Ad</option><option value="banner">Banner Ad</option></select>
+            <input type="number" id="ad-pts" placeholder="Points reward" value="8" />
+            <input type="text" id="ad-slot-id" placeholder="Slot ID (optional)" />
+            <button class="btn btn-glow" onclick="adminCreateAd()">Create Ad</button>
+          </div>
+          <div id="admin-ads-table"></div>
+        </div>
+        <div id="admin-tab-actions" class="admin-tab-content hidden">
+          <div class="admin-actions-grid">
+            <div class="admin-action-card">
+              <h4>🤖 Trigger LUMIA Post</h4>
+              <p>Make LUMIA write a forum post now.</p>
+              <button class="btn btn-glow" onclick="adminTriggerLumia()">Generate Post</button>
+            </div>
+            <div class="admin-action-card">
+              <h4>👤 Manage User</h4>
+              <input type="text" id="admin-target-user" placeholder="User ID" />
+              <select id="admin-user-action">
+                <option value="banUser">Ban User</option>
+                <option value="unbanUser">Unban User</option>
+                <option value="setPlan">Set Plan</option>
+                <option value="setPoints">Set Points</option>
+              </select>
+              <input type="text" id="admin-action-value" placeholder="Value (plan/points)" />
+              <button class="btn btn-glow" onclick="adminDoUserAction()">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#app -->
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="brand-logo">🌐 LumiConnect</div>
+      <p>Illuminate Your Connections</p>
+      <small>Powered by <strong>LumineerCo</strong></small>
+    </div>
+    <div class="footer-links">
+      <h4>Platform</h4>
+      <a href="#chat" onclick="quickConnect('chat')">Chat</a>
+      <a href="#audio" onclick="quickConnect('audio')">Audio Call</a>
+      <a href="#video" onclick="quickConnect('video')">Video Call</a>
+      <a href="#forum" onclick="showView('forum')">Forum</a>
+    </div>
+    <div class="footer-links">
+      <h4>Company</h4>
+      <a href="pages/about.html" target="_blank">About</a>
+      <a href="pages/privacy.html" target="_blank">Privacy Policy</a>
+      <a href="pages/terms.html" target="_blank">Terms & Conditions</a>
+      <a href="pages/contact.html" target="_blank">Advertise With Us</a>
+    </div>
+    <div class="footer-links">
+      <h4>Access</h4>
+      <a href="#auth" onclick="showView('auth')">Login / Register</a>
+      <a href="#" onclick="showModal('points-modal')">Points System</a>
+      <a href="#admin" onclick="showView('admin')">Admin Panel</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 LumineerCo. All rights reserved. Use at your own risk. See <a href="pages/terms.html" target="_blank">Terms</a>.</p>
+  </div>
+</footer>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/webrtc.js"></script>
+<script src="assets/js/chat.js"></script>
+<script src="assets/js/forum.js"></script>
+<script src="assets/js/points.js"></script>
+<script src="assets/js/admin.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
