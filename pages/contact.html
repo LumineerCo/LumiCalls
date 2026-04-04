@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Advertise With Us — LumiConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../assets/css/style.css"/>
+<style>
+.page-container{max-width:860px;margin:0 auto;padding:60px 24px}
+h1{font-size:2rem;background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.subtitle{color:var(--text-muted);margin-bottom:48px;font-size:0.9rem}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-bottom:24px}
+.section h2{font-size:1.1rem;margin-bottom:16px;color:var(--cyan)}
+.section p,.section li{color:var(--text-muted);font-size:0.875rem;line-height:1.8}
+.section ul{padding-left:20px;margin-bottom:12px}
+.slots-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.slot-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;transition:all .25s}
+.slot-card:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.slot-type{font-family:var(--font-head);font-size:0.9rem;margin-bottom:6px}
+.slot-price{font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--cyan);margin-bottom:4px}
+.slot-desc{font-size:0.78rem;color:var(--text-muted)}
+.booking-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.booking-form .full-width{grid-column:1/-1}
+.back-btn{display:inline-flex;align-items:center;gap:6px;margin-bottom:32px;color:var(--cyan);font-family:var(--font-head);font-size:0.85rem}
+.success-box{display:none;background:rgba(0,255,156,0.08);border:1px solid rgba(0,255,156,0.3);border-radius:12px;padding:24px;text-align:center;margin-top:20px}
+.success-box.show{display:block}
+.success-box h3{color:var(--green);margin-bottom:8px}
+.process-steps{display:flex;flex-direction:column;gap:12px}
+.step{display:flex;align-items:flex-start;gap:14px;padding:14px;background:var(--bg3);border-radius:10px}
+.step-num{width:32px;height:32px;background:linear-gradient(135deg,var(--cyan),var(--violet));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700;font-size:0.85rem;flex-shrink:0}
+.step-info h4{font-size:0.9rem;margin-bottom:4px}
+.step-info p{font-size:0.8rem;color:var(--text-muted);margin:0}
+</style>
+</head>
+<body>
+<div class="page-container">
+  <a href="../index.html" class="back-btn">← Back to LumiConnect</a>
+  <h1>Advertise With Us</h1>
+  <p class="subtitle">Reach thousands of daily active users across India and globally. Book your ad slot today.</p>
+
+  <div class="section">
+    <h2>📊 Our Reach</h2>
+    <div class="slots-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+      <div class="slot-card"><div class="slot-type">Daily Users</div><div class="slot-price">1K+</div><div class="slot-desc">Active daily visitors</div></div>
+      <div class="slot-card"><div class="slot-type">Sessions/Day</div><div class="slot-price">3K+</div><div class="slot-desc">Chat & call sessions</div></div>
+      <div class="slot-card"><div class="slot-type">Ad Views</div><div class="slot-price">10K+</div><div class="slot-desc">Monthly impressions</div></div>
+      <div class="slot-card"><div class="slot-type">Countries</div><div class="slot-price">50+</div><div class="slot-desc">Global audience</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🎯 Ad Slot Types & Pricing</h2>
+    <div class="slots-grid">
+      <div class="slot-card">
+        <div style="font-size:1.8rem;margin-bottom:8px">🔗</div>
+        <div class="slot-type">Link Ad</div>
+        <div class="slot-price">₹999<small style="font-size:0.8rem;color:var(--text-muted)">/week</small></div>
+        <div class="slot-desc">Users earn 8 pts by clicking your link. High CTR.</div>
+      </div>
+      <div class="slot-card">
+        <div style="font-size:1.8rem;margin-bottom:8px">🎥</div>
+        <div class="slot-type">Video Ad</div>
+        <div class="slot-price">₹2,499<small style="font-size:0.8rem;color:var(--text-muted)">/week</small></div>
+        <div class="slot-desc">15-sec video users watch for 15 pts. Maximum engagement.</div>
+      </div>
+      <div class="slot-card">
+        <div style="font-size:1.8rem;margin-bottom:8px">🖼️</div>
+        <div class="slot-type">Banner Ad</div>
+        <div class="slot-price">₹1,499<small style="font-size:0.8rem;color:var(--text-muted)">/week</small></div>
+        <div class="slot-desc">Displayed prominently during sessions. Brand visibility.</div>
+      </div>
+      <div class="slot-card">
+        <div style="font-size:1.8rem;margin-bottom:8px">⭐</div>
+        <div class="slot-type">Sponsored Post</div>
+        <div class="slot-price">₹3,499<small style="font-size:0.8rem;color:var(--text-muted)">/week</small></div>
+        <div class="slot-desc">LUMIA-assisted forum post by your brand. Maximum credibility.</div>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--text-muted);margin-top:12px">* Prices are starting rates. Final price negotiated based on duration, targeting, and volume. GST applicable. Bulk discounts available for 30-day+ bookings.</p>
+  </div>
+
+  <div class="section">
+    <h2>⚙️ How It Works</h2>
+    <div class="process-steps">
+      <div class="step"><div class="step-num">1</div><div class="step-info"><h4>Submit Booking Request</h4><p>Fill the form below with your company details, ad type, and budget.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-info"><h4>We Contact You Within 24h</h4><p>Our team reviews your request and reaches out with a custom quote and available slots.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-info"><h4>Price Agreement & Ad Materials</h4><p>We finalize pricing and you share your ad creative (image/video/link/copy).</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-info"><h4>Payment & Activation</h4><p>Upon payment confirmation, your ad goes live within 24 hours for the agreed duration.</p></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-info"><h4>Performance Report</h4><p>At the end of your campaign, we share impression count and engagement data.</p></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>📋 Book an Ad Slot</h2>
+    <div class="booking-form">
+      <div class="input-group">
+        <label>Company / Organization Name *</label>
+        <input type="text" id="f-company" placeholder="Your Company Name" />
+      </div>
+      <div class="input-group">
+        <label>Contact Person Name</label>
+        <input type="text" id="f-contact" placeholder="Your Name" />
+      </div>
+      <div class="input-group">
+        <label>Business Email *</label>
+        <input type="email" id="f-email" placeholder="contact@company.com" />
+      </div>
+      <div class="input-group">
+        <label>Phone Number</label>
+        <input type="tel" id="f-phone" placeholder="+91 9876543210" />
+      </div>
+      <div class="input-group">
+        <label>Ad Type *</label>
+        <select id="f-adtype">
+          <option value="">Select Ad Type</option>
+          <option value="link">Link Ad (₹999+/week)</option>
+          <option value="video">Video Ad (₹2499+/week)</option>
+          <option value="banner">Banner Ad (₹1499+/week)</option>
+          <option value="sponsored">Sponsored Post (₹3499+/week)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Campaign Duration</label>
+        <select id="f-duration">
+          <option value="7 days">1 Week</option>
+          <option value="14 days">2 Weeks</option>
+          <option value="30 days">1 Month</option>
+          <option value="90 days">3 Months (Best Value)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Budget Range (INR)</label>
+        <input type="text" id="f-budget" placeholder="e.g. ₹5,000 - ₹15,000" />
+      </div>
+      <div class="input-group">
+        <label>Target Audience</label>
+        <input type="text" id="f-audience" placeholder="e.g. Young professionals, India, 18-35" />
+      </div>
+      <div class="input-group full-width">
+        <label>Describe Your Product / Service *</label>
+        <textarea id="f-description" placeholder="Tell us about what you want to advertise, your goals, and any specific requirements..." style="min-height:100px"></textarea>
+      </div>
+      <div class="full-width">
+        <button class="btn btn-glow" onclick="submitBooking()" style="width:100%;padding:14px;font-size:1rem">📅 Submit Booking Request</button>
+      </div>
+    </div>
+    <div class="success-box" id="booking-success">
+      <h3>✅ Booking Request Received!</h3>
+      <p style="color:var(--text-muted)">Thank you! We'll contact you within 24 hours at the email provided to discuss pricing and campaign details.</p>
+      <p style="color:var(--text-muted);margin-top:8px">Your Booking Reference: <strong id="booking-ref" style="color:var(--cyan)">—</strong></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>❓ FAQ</h2>
+    <p><strong style="color:var(--text)">Do you accept international advertisers?</strong><br/>Yes! We accept advertisers from any country. Payment can be made via UPI, bank transfer, or international wire.</p>
+    <p style="margin-top:12px"><strong style="color:var(--text)">Can I target specific countries?</strong><br/>Our geo-based matching system can help prioritize your ads for users from specific regions. Discuss during negotiation.</p>
+    <p style="margin-top:12px"><strong style="color:var(--text)">What ad formats do you accept?</strong><br/>We accept image files (PNG/JPG, 1200x628 or 728x90), video URLs (YouTube/direct links), website URLs, and copy for sponsored posts.</p>
+    <p style="margin-top:12px"><strong style="color:var(--text)">Is there a refund policy?</strong><br/>No refunds after campaign activation. Unused booked slots can be rescheduled with 48h notice before start date.</p>
+  </div>
+</div>
+
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/api.js"></script>
+<script>
+async function submitBooking() {
+  const company     = document.getElementById('f-company').value.trim();
+  const email       = document.getElementById('f-email').value.trim();
+  const adType      = document.getElementById('f-adtype').value;
+  const description = document.getElementById('f-description').value.trim();
+  if (!company || !email || !adType || !description) {
+    alert('Please fill all required fields (marked with *)');
+    return;
+  }
+  const data = {
+    company,
+    contactName: document.getElementById('f-contact').value,
+    email,
+    phone:       document.getElementById('f-phone').value,
+    adType,
+    duration:    document.getElementById('f-duration').value,
+    budget:      document.getElementById('f-budget').value,
+    targetAudience: document.getElementById('f-audience').value,
+    description
+  };
+  const res = await API.bookAdSlot(data);
+  if (res.ok) {
+    document.getElementById('booking-ref').textContent = res.slotId || 'LUMIADS-' + Date.now();
+    document.getElementById('booking-success').classList.add('show');
+    document.querySelector('.booking-form').style.opacity = '0.4';
+    document.querySelector('.booking-form').style.pointerEvents = 'none';
+  } else {
+    alert('Submission failed. Please try again or email us directly.');
+  }
+}
+</script>
+</body>
+</html>
